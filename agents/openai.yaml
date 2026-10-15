@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fix Codex Reconnecting"
+  short_description: "Automatically repair Codex proxy and WebSocket failures"
+  default_prompt: "Use $codex-reconnecting-fix to automatically diagnose and repair persistent Codex Desktop reconnecting errors."
