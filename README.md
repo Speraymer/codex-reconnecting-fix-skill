@@ -36,6 +36,7 @@ No port lookup, file editing, node selection, or manual restart is required duri
 
 - Only the current user's `~/.codex/.env` is edited.
 - Existing unrelated entries are preserved.
+- Existing `ALL_PROXY` and `NO_PROXY` values are preserved; required local exclusions are appended to `NO_PROXY`.
 - Existing `.env` files receive timestamped backups.
 - A failed node search restores the previous selector.
 - Controller tokens, proxy credentials, subscription URLs, and public IPs are never printed.

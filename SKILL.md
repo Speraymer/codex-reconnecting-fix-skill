@@ -23,7 +23,7 @@ The script must finish with a tested route or fail with the exact blocker. Do no
 ## Invariants
 
 - Modify only the current user's `~/.codex/.env`; preserve unrelated entries and create a timestamped backup before changing an existing file.
-- Write only `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`. Remove stale duplicate proxy keys and malformed or redundant `ALL_PROXY` entries from that file.
+- Update only `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY`. Preserve `ALL_PROXY` and every unrelated entry; retain existing `NO_PROXY` targets and append the required local addresses.
 - Require both `https://chatgpt.com/cdn-cgi/trace` and `https://ws.chatgpt.com/` to complete through the selected proxy. A `404` from the bare WebSocket host is reachable and expected; status `000` or a TLS timeout is failure.
 - If a Clash-compatible controller is discoverable, test ordinary supported-region nodes, exclude traffic-multiplier and account-information entries, keep the fastest route that passes real endpoint checks, and restore the previous selector if every candidate fails.
 - Never print controller tokens, subscription URLs, proxy credentials, or public IP addresses.

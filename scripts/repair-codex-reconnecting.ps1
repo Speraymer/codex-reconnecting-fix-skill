@@ -318,12 +318,20 @@ function Update-CodexEnvironment {
     $envPath = Join-Path $HomePath '.env'
     $backupPath = $null
     $preserved = [System.Collections.Generic.List[string]]::new()
+    $noProxyEntries = [System.Collections.Generic.List[string]]::new()
 
     if (Test-Path -LiteralPath $envPath) {
         $backupPath = "$envPath.backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
         Copy-Item -LiteralPath $envPath -Destination $backupPath
         foreach ($line in [IO.File]::ReadAllLines($envPath)) {
-            if ($line -notmatch '^(?i)\s*(HTTP_PROXY|HTTPS_PROXY|NO_PROXY|ALL_PROXY|http_proxy|https_proxy|no_proxy|all_proxy)\s*=') { $preserved.Add($line) }
+            if ($line -match '^(?i)\s*NO_PROXY\s*=') {
+                $value = ($line -replace '^[^=]*=', '').Trim().Trim('"', "'")
+                foreach ($entry in ($value -split ',')) {
+                    if ($entry.Trim()) { $noProxyEntries.Add($entry.Trim()) }
+                }
+            } elseif ($line -notmatch '^(?i)\s*(HTTP_PROXY|HTTPS_PROXY)\s*=') {
+                $preserved.Add($line)
+            }
         }
     }
 
@@ -332,7 +340,8 @@ function Update-CodexEnvironment {
     $authority = $ProxyUri.GetLeftPart([System.UriPartial]::Authority)
     $preserved.Add("HTTP_PROXY=`"$authority`"")
     $preserved.Add("HTTPS_PROXY=`"$authority`"")
-    $preserved.Add('NO_PROXY="localhost,127.0.0.1,::1"')
+    $mergedNoProxy = @($noProxyEntries) + @('localhost', '127.0.0.1', '::1') | Select-Object -Unique
+    $preserved.Add("NO_PROXY=`"$($mergedNoProxy -join ',')`"")
     [IO.File]::WriteAllLines($envPath, $preserved, [Text.UTF8Encoding]::new($false))
 
     $written = [IO.File]::ReadAllLines($envPath)
